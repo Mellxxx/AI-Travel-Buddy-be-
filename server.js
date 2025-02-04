@@ -11,11 +11,10 @@ const PORT = process.env.PORT || 5000;
 // Sicherheitseinstellungen
 app.use(helmet());  // Setzt sichere HTTP-Header
 
-const cors = require("cors");
-
+// CORS-Konfiguration
 const allowedOrigins = [
     "http://localhost:5173", // Lokale Entwicklung
-    "https://ai-travel-buddy-mu.vercel.app/", // Vercel-Frontend
+    "https://ai-travel-buddy-mu.vercel.app", // Vercel-Frontend
 ];
 
 app.use(cors({
@@ -47,11 +46,8 @@ const apiKeyMiddleware = (req, res, next) => {
     next();
 };
 
-
-
 // API-Route für Empfehlungen
 app.post("/api/recommendations", apiKeyMiddleware, async (req, res) => {
-
     const { preferences, budget, location } = req.body;
 
     if (!preferences || !budget) {
@@ -69,11 +65,10 @@ app.post("/api/recommendations", apiKeyMiddleware, async (req, res) => {
 
 // API-Route für Orte
 app.post("/api/places", async (req, res) => {
-
     const { preferences, budget, country } = req.body;
 
-    if (!preferences || !budget) {
-        return res.status(400).json({ error: "Missing preferences or budget" });
+    if (!preferences || !budget || !country) {
+        return res.status(400).json({ error: "Missing preferences, budget, or country" });
     }
 
     try {
