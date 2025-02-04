@@ -10,7 +10,25 @@ const PORT = process.env.PORT || 5000;
 
 // Sicherheitseinstellungen
 app.use(helmet());  // Setzt sichere HTTP-Header
-app.use(cors({ origin: "http://localhost:5173" })); // Nur Frontend erlauben
+
+const cors = require("cors");
+
+const allowedOrigins = [
+    "http://localhost:5173", // Lokale Entwicklung
+    "https://ai-travel-buddy-mu.vercel.app/", // Vercel-Frontend
+];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true,
+}));
+
 app.use(express.json()); // JSON-Parsing aktivieren
 
 // Rate Limiting gegen Spam
