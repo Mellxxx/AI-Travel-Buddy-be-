@@ -8,15 +8,14 @@ const { getTravelRecommendations, getPlacesRecommendations } = require("./gptSer
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Sicherheitseinstellungen
-app.use(helmet());  // Setzt sichere HTTP-Header
+app.use(helmet());  // safe HTTP-Header
 
-// CORS-Konfiguration
+// CORS-Config
 const allowedOrigins = [
-    "http://localhost:5173", // Lokale Entwicklung
+    "http://localhost:5173", // Local development
     "https://ai-travel-buddy-mu.vercel.app", // Vercel-Frontend
-    "https://ai-travel-buddy.com", // Hauptdomain (ohne www)
-    "https://www.ai-travel-buddy.com", // 🔥 Füge `www.`-Version hinzu!
+    "https://ai-travel-buddy.com", // main domain (!www)
+    "https://www.ai-travel-buddy.com", // mein domain (www)
 ];
 
 app.use(cors({
@@ -30,16 +29,16 @@ app.use(cors({
     credentials: true,
 }));
 
-app.use(express.json()); // JSON-Parsing aktivieren
+app.use(express.json()); // JSON-Parsing
 
-// Rate Limiting gegen Spam
+// Rate Limiting 
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 Minuten
-    max: 100, // Maximal 100 Requests pro IP
+    windowMs: 15 * 60 * 1000,
+    max: 100,
 });
 app.use(limiter);
 
-// Middleware zur API-Key-Validierung
+// Middleware to validate API-Key
 const apiKeyMiddleware = (req, res, next) => {
     const clientApiKey = req.headers["authorization"];
     if (clientApiKey !== `Bearer ${process.env.API_KEY}`) {
@@ -48,7 +47,7 @@ const apiKeyMiddleware = (req, res, next) => {
     next();
 };
 
-// API-Route für Empfehlungen
+// API-Route for Reccomendations
 app.post("/api/recommendations", apiKeyMiddleware, async (req, res) => {
     const { preferences, budget, location } = req.body;
 
@@ -65,7 +64,7 @@ app.post("/api/recommendations", apiKeyMiddleware, async (req, res) => {
     }
 });
 
-// API-Route für Orte
+// API-Route for Places
 app.post("/api/places", async (req, res) => {
     const { preferences, budget, country } = req.body;
 
@@ -82,5 +81,5 @@ app.post("/api/places", async (req, res) => {
     }
 });
 
-// Server starten
+// start Server
 app.listen(PORT, () => console.log(`Server läuft auf http://localhost:${PORT}`));

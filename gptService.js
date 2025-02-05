@@ -1,4 +1,4 @@
-const axios = require('axios'); // Stelle sicher, dass axios installiert ist
+const axios = require('axios');
 
 async function getTravelRecommendations(preferences, budget, location) {
     const prompt = `Based on the following prefrences:
@@ -48,10 +48,10 @@ IMPORTANT: Answer only with the JSON object without additional explanations or i
         const response = await axios.post(
             "https://api.openai.com/v1/chat/completions",
             {
-                model: "gpt-3.5-turbo", // Du kannst auch "gpt-4" verwenden, falls verfügbar
+                model: "gpt-3.5-turbo",
                 messages: [{ role: "user", content: prompt }],
                 temperature: 0.7,
-                max_tokens: 800, // Erhöhe die max_tokens für längere Antworten
+                max_tokens: 800,
                 n: 1,
             },
             {
@@ -63,11 +63,9 @@ IMPORTANT: Answer only with the JSON object without additional explanations or i
             }
         );
 
-        // Extrahiere die Antwort
         if (response.data && response.data.choices && response.data.choices.length > 0) {
             const gptResponse = response.data.choices[0].message.content.trim();
 
-            // Nutze einen robusteren Parser
             const jsonStartIndex = gptResponse.indexOf('[');
             const jsonEndIndex = gptResponse.lastIndexOf(']') + 1;
 
@@ -97,7 +95,7 @@ IMPORTANT: Answer only with the JSON object without additional explanations or i
         } else {
             console.error('Fehler bei der Anfrage:', error.message);
         }
-        // Gib eine klare Fehlermeldung aus
+
         throw new Error("Fehler bei der Empfehlungsgenerierung: " + error.message);
     }
 }
@@ -158,7 +156,7 @@ async function getPlacesRecommendations(preferences, budget, country) {
                 model: "gpt-3.5-turbo",
                 messages: [{ role: "user", content: prompt }],
                 temperature: 0.7,
-                max_tokens: 1000, // Mehr Platz für Antwort
+                max_tokens: 1000,
                 n: 1,
             },
             {
@@ -166,7 +164,7 @@ async function getPlacesRecommendations(preferences, budget, country) {
                     "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
                     "Content-Type": "application/json",
                 },
-                timeout: 15000 // Timeout auf 15 Sekunden erhöhen
+                timeout: 15000
             }
         );
 
@@ -174,10 +172,8 @@ async function getPlacesRecommendations(preferences, budget, country) {
             throw new Error("Invalid response format: No choices returned.");
         }
 
-        // GPT-Antwort parsen
         const gptResponse = response.data.choices[0].message.content.trim();
 
-        // JSON sicher parsen
         try {
             const recommendations = JSON.parse(gptResponse);
 
