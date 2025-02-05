@@ -14,8 +14,9 @@ app.use(helmet());  // Setzt sichere HTTP-Header
 // CORS-Konfiguration
 const allowedOrigins = [
     "http://localhost:5173", // Lokale Entwicklung
-    "https://ai-travel-buddy.com", // Vercel-Frontend
     "https://ai-travel-buddy-mu.vercel.app", // Vercel-Frontend
+    "https://ai-travel-buddy.com", // Hauptdomain (ohne www)
+    "https://www.ai-travel-buddy.com", // 🔥 Füge `www.`-Version hinzu!
 ];
 
 app.use(cors({
