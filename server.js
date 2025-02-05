@@ -15,6 +15,7 @@ app.use(helmet());  // Setzt sichere HTTP-Header
 const allowedOrigins = [
     "http://localhost:5173", // Lokale Entwicklung
     "https://ai-travel-buddy.com", // Vercel-Frontend
+    "https://ai-travel-buddy-mu.vercel.app", // Vercel-Frontend
 ];
 
 app.use(cors({
