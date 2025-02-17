@@ -1,6 +1,7 @@
 const axios = require('axios');
 
-async function getTravelRecommendations(preferences, budget, location) {
+async function getTravelRecommendations(preferences, budget, location, previousCountries = []) {
+    const excludedCountries = previousCountries.length > 0 ? previousCountries.join(', ') : "None";
     const prompt = `Based on the following prefrences:
 
 Prefrenes: ${preferences.join(', ')} 
@@ -43,7 +44,9 @@ Suggest me exactly five different countries and return the answer in exactly thi
   },
 ]
 
-IMPORTANT: Answer only with the JSON object without additional explanations or introductions and any text. Answer only in the JSON format, as shown above`;
+IMPORTANT: Answer only with the JSON object without additional explanations or introductions and any text. Answer only in the JSON format, as shown above
+IMPORTANT: Do NOT suggest countries that were already listed: **${excludedCountries}**.`;
+
     try {
         const response = await axios.post(
             "https://api.openai.com/v1/chat/completions",
@@ -197,6 +200,7 @@ async function getPlacesRecommendations(preferences, budget, country) {
         throw new Error("Fehler bei der Empfehlungsgenerierung: " + error.message);
     }
 }
+
 
 
 // Exports

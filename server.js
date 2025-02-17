@@ -8,14 +8,15 @@ const { getTravelRecommendations, getPlacesRecommendations } = require("./gptSer
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(helmet());  // safe HTTP-Header
+// Sicherheitseinstellungen
+app.use(helmet());  // Setzt sichere HTTP-Header
 
-// CORS-Config
+// CORS-Konfiguration
 const allowedOrigins = [
-    "http://localhost:5173", // Local development
+    "http://localhost:5173",
     "https://ai-travel-buddy-mu.vercel.app", // Vercel-Frontend
-    "https://ai-travel-buddy.com", // main domain (!www)
-    "https://www.ai-travel-buddy.com", // mein domain (www)
+    "https://ai-travel-buddy.com", // Hauptdomain (ohne www)
+    "https://www.ai-travel-buddy.com", // 🔥 Füge `www.`-Version hinzu!
 ];
 
 app.use(cors({
@@ -29,7 +30,7 @@ app.use(cors({
     credentials: true,
 }));
 
-app.use(express.json()); // JSON-Parsing
+app.use(express.json()); // JSON-Parsing 
 
 // Rate Limiting 
 const limiter = rateLimit({
@@ -38,7 +39,7 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Middleware to validate API-Key
+// Middleware zur API-Key-Validierung
 const apiKeyMiddleware = (req, res, next) => {
     const clientApiKey = req.headers["authorization"];
     if (clientApiKey !== `Bearer ${process.env.API_KEY}`) {
@@ -47,7 +48,7 @@ const apiKeyMiddleware = (req, res, next) => {
     next();
 };
 
-// API-Route for Reccomendations
+// API-Route für Empfehlungen
 app.post("/api/recommendations", apiKeyMiddleware, async (req, res) => {
     const { preferences, budget, location } = req.body;
 
@@ -64,7 +65,25 @@ app.post("/api/recommendations", apiKeyMiddleware, async (req, res) => {
     }
 });
 
-// API-Route for Places
+// API-Route für mehr Empfehlungen
+app.post("/api/loadMoreResults", apiKeyMiddleware, async (req, res) => {
+    const { preferences, budget, location, previousCountries } = req.body;
+
+    if (!preferences || !budget || !location || !previousCountries) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    try {
+        const recommendations = await getTravelRecommendations(preferences, budget, location, previousCountries);
+        res.json({ recommendations });
+    } catch (error) {
+        console.error("Fehler bei der zusätzlichen Empfehlungsgenerierung:", error);
+        res.status(500).json({ error: "Fehler bei der zusätzlichen Empfehlungsgenerierung" });
+    }
+});
+
+
+// API-Route für Orte
 app.post("/api/places", async (req, res) => {
     const { preferences, budget, country } = req.body;
 
@@ -81,5 +100,5 @@ app.post("/api/places", async (req, res) => {
     }
 });
 
-// start Server
+// Server starten
 app.listen(PORT, () => console.log(`Server läuft auf http://localhost:${PORT}`));
