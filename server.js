@@ -1,15 +1,20 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
-const { getTravelRecommendations, getPlacesRecommendations } = require("./gptService");
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import { getTravelRecommendations, getPlacesRecommendations } from "./gptService.js";
+
+import userRouter from "./routes/userRoute.js";
+import connectDB from "./config/mongodb.js";
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Sicherheitseinstellungen
 app.use(helmet());  // Setzt sichere HTTP-Header
+connectDB()
 
 // CORS-Konfiguration
 const allowedOrigins = [
@@ -99,6 +104,12 @@ app.post("/api/places", async (req, res) => {
         res.status(500).json({ error: "Fehler bei der Empfehlungsgenerierung" });
     }
 });
+
+
+// API Endpoints Login Register
+
+app.use('/api/user', userRouter)
+
 
 // Server starten
 app.listen(PORT, () => console.log(`Server läuft auf http://localhost:${PORT}`));

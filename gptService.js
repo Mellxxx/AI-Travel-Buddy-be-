@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 
 async function getTravelRecommendations(preferences, budget, location, previousCountries = []) {
     const excludedCountries = previousCountries.length > 0 ? previousCountries.join(', ') : "None";
@@ -204,4 +204,4 @@ async function getPlacesRecommendations(preferences, budget, country) {
 
 
 // Exports
-module.exports = { getTravelRecommendations, getPlacesRecommendations };
+export { getTravelRecommendations, getPlacesRecommendations };
