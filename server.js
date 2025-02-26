@@ -6,6 +6,7 @@ import rateLimit from "express-rate-limit";
 import { getTravelRecommendations, getPlacesRecommendations } from "./gptService.js";
 
 import userRouter from "./routes/userRoute.js";
+import favoritesRouter from "./routes/favoritesRoute.js";
 import connectDB from "./config/mongodb.js";
 
 
@@ -109,6 +110,10 @@ app.post("/api/places", async (req, res) => {
 // API Endpoints Login Register
 
 app.use('/api/user', userRouter)
+
+// API Endpoints Favourites
+
+app.use("/api/favorites", favoritesRouter);
 
 
 // Server starten
