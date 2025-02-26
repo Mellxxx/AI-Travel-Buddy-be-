@@ -57,23 +57,24 @@ favoritesRouter.get("/", authMiddleware, async (req, res) => {
     }
 });
 
-// ** Ein einzelnes Favoriten-Objekt über ID abrufen (für `FavoriteDetail.jsx`) **
-favoritesRouter.get("/:id", async (req, res) => {
+// ** single Favorite-Objekt ( for `FavoriteDetail.jsx`) **
+favoritesRouter.get("/:id", authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
-        const user = await User.findOne({ "favorites.id": id });
+        const user = await User.findOne({ "favorites._id": id }, { "favorites.$": 1 });
 
-        if (!user) return res.status(404).json({ error: "Favorite not found" });
+        if (!user || !user.favorites.length) {
+            return res.status(404).json({ error: "Favorite not found" });
+        }
 
-        const favorite = user.favorites.find(fav => fav.id === id);
-        res.json({ success: true, favorite });
+        res.json({ success: true, favorite: user.favorites[0] });
     } catch (error) {
-        console.error("Fehler beim Abrufen:", error);
+        console.error("Fehler beim Abrufen des Favoriten:", error);
         res.status(500).json({ error: "Fehler beim Abrufen des Favoriten" });
     }
 });
 
-// ** Favoriten aus der Liste entfernen **
+// ** remove from List **
 favoritesRouter.delete("/remove/:id", authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
